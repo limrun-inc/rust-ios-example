@@ -1,0 +1,891 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Limrun API
+paths:
+  /v1/android_instances:
+    get:
+      summary: List Android instances
+      operationId: listAndroidInstancesV1
+      parameters:
+        - name: region
+          description: Region where the instance is scheduled on.
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: state
+          description: |
+            State filter to apply to Android instances to return. Each comma-separated state will be used as part of
+            an OR clause, e.g. "assigned,ready" will return all instances that are either assigned or ready.
+
+            Valid states: creating, assigned, ready, terminated, unknown
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "assigned,ready"
+        - name: labelSelector
+          description: |
+            Labels filter to apply to Android instances to return.
+            Expects a comma-separated list of key=value pairs (e.g., env=prod,region=us-west).
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "env=prod,version=1.2"
+        - name: limit
+          description: |
+            Maximum number of instances to be returned. The default is 50.
+          in: query
+          schema:
+            type: integer
+            example: 50
+            default: 50
+        - name: startingAfter
+          in: query
+          schema:
+            type: string
+        - name: endingBefore
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AndroidInstance"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+    post:
+      summary: Create an Android instance
+      operationId: createAndroidInstanceV1
+      parameters:
+        - name: wait
+          description: Return after the instance is ready to connect.
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: reuseIfExists
+          description: |
+            If there is another instance with given labels and region, return that one instead of creating
+            a new instance.
+          required: false
+          in: query
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AndroidInstanceCreate"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AndroidInstance"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+  /v1/android_instances/{id}:
+    get:
+      summary: Get Android instance with given ID
+      operationId: getAndroidInstanceV1
+      parameters:
+        - name: id
+          description: Android instance ID, e.g. android_someid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AndroidInstance"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+    delete:
+      summary: Delete Android instance with given name
+      operationId: deleteAndroidInstanceV1
+      parameters:
+        - name: id
+          description: Android instance ID, e.g. android_someid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+
+  /v1/ios_instances:
+    get:
+      summary: List iOS instances
+      operationId: listIOSInstances
+      parameters:
+        - name: region
+          description: Region where the instance is scheduled on.
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: state
+          description: |
+            State filter to apply to Android instances to return. Each comma-separated state will be used as part of
+            an OR clause, e.g. "assigned,ready" will return all instances that are either assigned or ready.
+
+            Valid states: creating, assigned, ready, terminated, unknown
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "assigned,ready"
+        - name: labelSelector
+          description: |
+            Labels filter to apply to instances to return.
+            Expects a comma-separated list of key=value pairs (e.g., env=prod,region=us-west).
+          required: false
+          in: query
+          schema:
+            type: string
+            example: "env=prod,version=1.2"
+        - name: limit
+          description: |
+            Maximum number of items to be returned. The default is 50.
+          in: query
+          schema:
+            type: integer
+            example: 50
+            default: 50
+        - name: startingAfter
+          in: query
+          schema:
+            type: string
+        - name: endingBefore
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IOSInstance"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+    post:
+      summary: Create an iOS instance
+      operationId: createIOSInstance
+      parameters:
+        - name: wait
+          description: Return after the instance is ready to connect.
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: reuseIfExists
+          description: |
+            If there is another instance with given labels and region, return that one instead of creating
+            a new instance.
+          required: false
+          in: query
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IOSInstanceCreate"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IOSInstance"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+  /v1/ios_instances/{id}:
+    get:
+      summary: Get iOS instance with given ID
+      operationId: getIOSInstance
+      parameters:
+        - name: id
+          description: iOS instance ID, e.g. ios_someid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IOSInstance"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+    delete:
+      summary: Delete iOS instance with given name
+      operationId: deleteIOSInstance
+      parameters:
+        - name: id
+          description: iOS instance ID, e.g. ios_someid
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+  /v1/assets/{assetId}:
+    get:
+      summary: Get the asset with given ID.
+      operationId: getAsset
+      parameters:
+        - name: assetId
+          description: Asset ID
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: includeDownloadUrl
+          description: Toggles whether a download URL should be included in the response
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: includeUploadUrl
+          description: Toggles whether an upload URL should be included in the response
+          required: false
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Asset"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+    delete:
+      summary: Delete the asset with given ID.
+      operationId: deleteAsset
+      parameters:
+        - name: assetId
+          description: Asset ID
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+  /v1/assets:
+    get:
+      summary: List organization's all assets with given filters. If none given, return all assets.
+      operationId: listAssets
+      parameters:
+        - name: nameFilter
+          description: Query by file name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: includeAppStore
+          description: |
+            If true, also includes assets from Limrun App Store where you have access to.
+            App Store assets will be returned with a "appstore/" prefix in their names.
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: includeDownloadUrl
+          description: Toggles whether a download URL should be included in the response
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: includeUploadUrl
+          description: Toggles whether an upload URL should be included in the response
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: limit
+          description: |
+            Maximum number of items to be returned. The default is 50.
+          in: query
+          schema:
+            type: integer
+            example: 50
+            default: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Asset"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+    put:
+      summary: |-
+        Creates an asset and returns upload and download URLs. If there is a corresponding file uploaded in the storage
+        with given name, its MD5 is returned so you can check if a re-upload is necessary. If no MD5 is returned, then
+        there is no corresponding file in the storage so downloading it directly or using it in instances will fail
+        until you use the returned upload URL to submit the file.
+      operationId: putAsset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssetPut"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetPutResult"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIError"
+
+components:
+  schemas:
+    AndroidInstanceCreate:
+      type: object
+      properties:
+        metadata:
+          type: object
+          properties:
+            displayName:
+              type: string
+            labels:
+              type: object
+              additionalProperties:
+                type: string
+        spec:
+          type: object
+          properties:
+            clues:
+              type: array
+              items:
+                type: object
+                properties:
+                  kind:
+                    type: string
+                    enum:
+                      - ClientIP
+                      - OSVersion
+                  clientIp:
+                    type: string
+                  osVersion:
+                    type: string
+                    description: The major version of Android, e.g. "13", "14" or "15".
+                required:
+                  - kind
+            region:
+              type: string
+              description: |-
+                The region where the instance will be created. If not given, will be decided based on scheduling clues
+                and availability.
+            inactivityTimeout:
+              type: string
+              format: duration
+              description: |-
+                After how many minutes of inactivity should the instance be terminated.
+                Example values 1m, 10m, 3h.
+                Default is 3m.
+                Providing "0" disables inactivity checks altogether.
+              default: 3m
+            hardTimeout:
+              type: string
+              format: duration
+              description: |-
+                After how many minutes should the instance be terminated.
+                Example values 1m, 10m, 3h.
+                Default is "0" which means no hard timeout.
+              default: "0"
+            sandbox:
+              $ref: "#/components/schemas/SandboxSpec"
+            initialAssets:
+              type: array
+              items:
+                type: object
+                properties:
+                  kind:
+                    type: string
+                    enum:
+                      - App
+                      - Configuration
+                    default: App
+                  configuration:
+                    type: object
+                    properties:
+                      kind:
+                        type: string
+                        enum:
+                          - ChromeFlag
+                      chromeFlag:
+                        type: string
+                        enum:
+                          - "enable-command-line-on-non-rooted-devices@1"
+                    required:
+                      - kind
+                  source:
+                    type: string
+                    enum:
+                      - URL
+                      - URLs
+                      - AssetName
+                      - AssetNames
+                      - AssetIDs
+                    default: URL
+                  url:
+                    type: string
+                  assetName:
+                    type: string
+                  urls:
+                    type: array
+                    items:
+                      type: string
+                  assetNames:
+                    type: array
+                    items:
+                      type: string
+                  assetIds:
+                    type: array
+                    items:
+                      type: string
+                required:
+                  - kind
+    AndroidInstance:
+      type: object
+      properties:
+        metadata:
+          type: object
+          properties:
+            id:
+              type: string
+            displayName:
+              type: string
+            organizationId:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            terminatedAt:
+              type: string
+              format: date-time
+            labels:
+              type: object
+              additionalProperties:
+                type: string
+          required:
+            - id
+            - organizationId
+            - createdAt
+        spec:
+          type: object
+          properties:
+            region:
+              type: string
+              description: |-
+                The region where the instance will be created. If not given, will be decided based on scheduling clues
+                and availability.
+            inactivityTimeout:
+              type: string
+              format: duration
+              description: |-
+                After how many minutes of inactivity should the instance be terminated.
+                Example values 1m, 10m, 3h.
+                Default is 3m.
+                Providing "0" disables inactivity checks altogether.
+              default: 3m
+            hardTimeout:
+              type: string
+              format: duration
+              description: |-
+                After how many minutes should the instance be terminated.
+                Example values 1m, 10m, 3h.
+                Default is "0" which means no hard timeout.
+              default: "0"
+          required:
+            - region
+            - inactivityTimeout
+        status:
+          type: object
+          properties:
+            state:
+              $ref: "#/components/schemas/AndroidInstanceState"
+            adbWebSocketUrl:
+              type: string
+            endpointWebSocketUrl:
+              type: string
+            targetHttpPortUrlPrefix:
+              type: string
+            token:
+              type: string
+            sandbox:
+              $ref: "#/components/schemas/AndroidSandboxStatus"
+            errorMessage:
+              type: string
+          required:
+            - state
+            - token
+      required:
+        - metadata
+        - spec
+        - status
+    IOSInstanceCreate:
+      type: object
+      properties:
+        metadata:
+          type: object
+          properties:
+            displayName:
+              type: string
+            labels:
+              type: object
+              additionalProperties:
+                type: string
+        spec:
+          type: object
+          properties:
+            sandbox:
+              type: object
+              properties:
+                xcode:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+            clues:
+              type: array
+              items:
+                type: object
+                properties:
+                  kind:
+                    type: string
+                    enum:
+                      - ClientIP
+                  clientIp:
+                    type: string
+                required:
+                  - kind
+            region:
+              type: string
+              description: |-
+                The region where the instance will be created. If not given, will be decided based on scheduling clues
+                and availability.
+            inactivityTimeout:
+              type: string
+              format: duration
+              description: |-
+                After how many minutes of inactivity should the instance be terminated.
+                Example values 1m, 10m, 3h.
+                Default is 3m.
+                Providing "0" disables inactivity checks altogether.
+              default: 3m
+            hardTimeout:
+              type: string
+              format: duration
+              description: |-
+                After how many minutes should the instance be terminated.
+                Example values 1m, 10m, 3h.
+                Default is "0" which means no hard timeout.
+              default: "0"
+            initialAssets:
+              type: array
+              items:
+                type: object
+                properties:
+                  kind:
+                    type: string
+                    enum:
+                      - App
+                    default: App
+                  source:
+                    type: string
+                    enum:
+                      - URL
+                      - AssetName
+                      - AssetID
+                    default: URL
+                  url:
+                    type: string
+                  assetName:
+                    type: string
+                  assetId:
+                    type: string
+                  launchMode:
+                    type: string
+                    description: |
+                      Launch mode specifies how to launch the app after installation. If not given, the app
+                      won't be launched.
+                    enum:
+                      - ForegroundIfRunning
+                      - RelaunchIfRunning
+                      - FailIfRunning
+                required:
+                  - kind
+                  - source
+    IOSInstance:
+      type: object
+      properties:
+        metadata:
+          type: object
+          properties:
+            id:
+              type: string
+            displayName:
+              type: string
+            organizationId:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            terminatedAt:
+              type: string
+              format: date-time
+            labels:
+              type: object
+              additionalProperties:
+                type: string
+          required:
+            - id
+            - organizationId
+            - createdAt
+        spec:
+          type: object
+          properties:
+            region:
+              type: string
+              description: |-
+                The region where the instance will be created. If not given, will be decided based on scheduling clues
+                and availability.
+            inactivityTimeout:
+              type: string
+              format: duration
+              description: |-
+                After how many minutes of inactivity should the instance be terminated.
+                Example values 1m, 10m, 3h.
+                Default is 3m.
+                Providing "0" disables inactivity checks altogether.
+              default: 3m
+            hardTimeout:
+              type: string
+              format: duration
+              description: |-
+                After how many minutes should the instance be terminated.
+                Example values 1m, 10m, 3h.
+                Default is "0" which means no hard timeout.
+              default: "0"
+          required:
+            - region
+            - inactivityTimeout
+        status:
+          type: object
+          properties:
+            state:
+              $ref: "#/components/schemas/IOSInstanceState"
+            apiUrl:
+              type: string
+            endpointWebSocketUrl:
+              type: string
+            targetHttpPortUrlPrefix:
+              type: string
+            mcpUrl:
+              type: string
+            sandbox:
+              $ref: "#/components/schemas/IOSSandboxStatus"
+            token:
+              type: string
+            errorMessage:
+              type: string
+          required:
+            - state
+            - token
+      required:
+        - metadata
+        - spec
+        - status
+    AndroidInstanceState:
+      type: string
+      # This enum is copied to DB schema as well.
+      enum:
+        - unknown
+        - creating
+        - assigned
+        - ready
+        - terminated
+    IOSInstanceState:
+      type: string
+      # This enum is copied to DB schema as well.
+      enum:
+        - unknown
+        - creating
+        - assigned
+        - ready
+        - terminated
+    APIError:
+      type: object
+      properties:
+        message:
+          type: string
+        reason:
+          type: string
+          enum:
+            - NoSubscription
+            - NoRemainingMinutes
+            - ConcurrencyLimitReached
+      required:
+        - message
+    AssetPut:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    Asset:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayName:
+          type: string
+          description: Human-readable display name for the asset. If not set, the name should be used.
+        os:
+          type: string
+          enum: [ios, android]
+          description: The operating system this asset is for. If not set, the asset is available for all platforms.
+        md5:
+          type: string
+          description: Returned only if there is a corresponding file uploaded already.
+        signedUploadUrl:
+          type: string
+        signedDownloadUrl:
+          type: string
+      required:
+        - id
+        - name
+    AssetPutResult:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        md5:
+          type: string
+          description: Returned only if there is a corresponding file uploaded already.
+        signedUploadUrl:
+          type: string
+        signedDownloadUrl:
+          type: string
+      required:
+        - id
+        - name
+        - signedUploadUrl
+        - signedDownloadUrl
+    AndroidSandboxStatus:
+      type: object
+      properties:
+        playwrightAndroid:
+          type: object
+          properties:
+            url:
+              type: string
+    IOSSandboxStatus:
+      type: object
+      properties:
+        xcode:
+          type: object
+          properties:
+            url:
+              type: string
+    SandboxSpec:
+      type: object
+      properties:
+        playwrightAndroid:
+          type: object
+          properties:
+            enabled:
+              type: boolean
