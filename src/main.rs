@@ -67,6 +67,7 @@ struct Output {
     opened_url: String,
     #[serde(rename = "mcpUrl")]
     mcp_url: String,
+    token: String,
 }
 
 #[tokio::main]
@@ -107,6 +108,7 @@ async fn run() -> Result<()> {
         instance_id: instance.metadata.id,
         opened_url: open_url,
         mcp_url,
+        token: token.clone(),
     };
 
     println!("{}", serde_json::to_string(&output)?);
